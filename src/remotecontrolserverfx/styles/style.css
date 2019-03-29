@@ -1,63 +1,79 @@
-#hbox_Header {
+#hboxHeader {
     -fx-background-color: #ffffff;
     -fx-background-radius: 0 0 15 15;
 }
 
-#pane_OutHeader {
+#paneOutHeader {
     -fx-background-color: #001f3f;
     -fx-background-radius: 0 0 15 15;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); /*#0074D9; Border color*/
 }
 
-#vbox_Body, #hbox_Settings {
-    -fx-border-color: #7b7b7d;
-    -fx-border-width: 3;
-    -fx-border-radius: 15;
+#vboxRecognition, #vboxSettings {
+/*    -fx-border-color: #7b7b7d;*/
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 15;
 }
 
-#lbl_Host {
+.table-view:row-selection:constrained-resize {
+    -fx-background-radius: 15;
+}
+
+#lblHost {
     -fx-cursor: hand;
 }
 
-#btn_Run {
+#btnRun {
     -fx-background-color: #001f3f;
     -fx-text-fill: #ebebeb;
     -fx-background-radius: 50%;
     -fx-cursor: hand;
 }
 
-#btn_Run:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); /*#0074D9; Border color*/
-    -fx-border-width: 3;
-    -fx-border-radius: 10;
+#btnRun:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+/*    -fx-border-width: 3;
+    -fx-border-radius: 10;*/
 }
 
-#btn_Run:pressed {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 0, 0, 0, 0); /*#0074D9; Border color*/
+#btnRun:pressed {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 0, 0, 0, 0);
 }
 
-.btn_RunActivated {
+.btnRunActivated {
     -fx-effect: dropshadow(three-pass-box, rgba(67,133,245, 1), 10, 0, 0, 0);
 }
 
-#pane_MainView {
+#paneMainView {
     -fx-background-color: #f3f4f6;
 }
 
-#lstv_Pathes {
+#imgAdd {
     -fx-background-radius: 15;
-    -fx-background-color: #f3f4f6;
+    -fx-border-width: 10;
 }
 
-#vbox_Settings_Names {
-    -fx-background-radius: 15 0 0 15;
-    -fx-background-color: #f3f4f6;
+.table-view {
+    -fx-background-color: transparent;
 }
 
-#vbox_Navigator {
+.table-row-cell {
+    -fx-focus-traversable: false;
+}
+
+.table-view .column-header-background .nested-column-header {
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+}
+
+#vboxNavigator {
     -fx-background-color: #001f3f;
     -fx-background-radius: 5 0 0 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); /*#0074D9; Border color*/
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.btnFileChoose {
+    -fx-focus-traversable: false;
 }
 
 .scroll-bar:horizontal .track,

@@ -20,8 +20,8 @@ import javafx.stage.Stage;
  * @author Username
  */
 public class RemoteControlServerFX extends Application {
-	protected final int SCENE_HEIGHT = 450;
-	protected final int SCENE_WIDTH = 600;
+	protected final int SCENE_HEIGHT = 550;
+	protected final int SCENE_WIDTH = 750;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -36,16 +36,9 @@ public class RemoteControlServerFX extends Application {
 
 	@Override
 	public void stop() {
-		Server.getProcess().interrupt();
-		try {
-			Server.accept.close();
-		} catch (IOException ex) {
-			Logger.getLogger(RemoteControlServerFX.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		Server.stop();
 	}
 
-	
-	
 	/**
 	 * @param args the command line arguments
 	 */

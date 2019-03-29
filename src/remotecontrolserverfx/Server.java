@@ -10,6 +10,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -35,9 +37,7 @@ public class Server {
 	private int PORT = 49150;
 	private final int COUNT_OF_CONNECTIONS = 5;
 	
-	private ServerSocket server;
-	private static Thread process;
-	public static Socket accept;
+	private static ServerSocket server;
 	
 	public Server(){}
 
@@ -46,33 +46,33 @@ public class Server {
 	}
 
 	public boolean start() throws ServerRunningException {
-	  process = new Thread(() -> {
+	  Thread process = new Thread(() -> {
 			System.out.println("Starting...");
 			try {
 				server = new ServerSocket(PORT);
 				ExecutorService flowsPool = Executors.newFixedThreadPool(COUNT_OF_CONNECTIONS);
 				Semaphore block = new Semaphore(COUNT_OF_CONNECTIONS);
 				
-				while (!process.isInterrupted()) {
+				while (true) {
 					block.acquire();
-					
-					accept = server.accept();
-					flowsPool.execute(() -> {
-						System.out.println("new thread");
+					Socket accept = server.accept();
+					/*flowsPool.execute(*/Thread session = new Thread(()-> {
 						try (
 							InputStream inputStream = accept.getInputStream();
-							BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "cp1251"));
-							DataInputStream dataInputStream = new DataInputStream(inputStream);
+							OutputStream outputStream = accept.getOutputStream();
+							BufferedReader readerStream = new BufferedReader(new InputStreamReader(inputStream, "cp1251"));
+							PrintWriter writerStream = new PrintWriter(outputStream, true);
 						){
 							String command;
-							
-							while((command = br.readLine()) != null){
+							while((command = readerStream.readLine()) != null){
 								System.out.println(command);
-								Validation.check(command);
+								if(!Validation.check(command)){
+									writerStream.print(false);
+								}
 							}
 							
 							accept.close();
-							System.out.println("closed ..");
+							System.out.println("Session closed...");
 						} catch (IOException ex) {
 							ex.printStackTrace();
 						} catch (NullPointerException ex){
@@ -81,21 +81,16 @@ public class Server {
 							block.release();
 						}
 					});
+					session.start();
+					session.setName(String.valueOf(block.getQueueLength()));
 				}
 			} catch (InterruptedException ex) {
 				throw new ServerInterruptedException(ex);
 			} catch (IOException ex) {
 				throw new ServerRunningException(ex);
-			} finally {
-				try {
-					server.close();
-					System.out.println("Stoped");
-				} catch (IOException ex) {
-					throw new ServerRunningException(ex);
-				}
 			}
 		});
-		process.setName("ProcessServer");
+		process.setName("ServerThread");
 		process.start();
 		return true;
 	}
@@ -143,7 +138,11 @@ public class Server {
 		return hostAddress;
 	}
 
-	public static Thread getProcess() {
-		return process;
+	public static void stop() {
+		try {
+			server.close();
+		} catch (IOException ex) {
+			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 }

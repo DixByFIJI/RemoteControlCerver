@@ -32,6 +32,7 @@ public abstract class Validation {
 	private static final Pattern CLOSE_PATTERN = Pattern.compile("close (.+)", Pattern.CASE_INSENSITIVE);
 	
 	public static boolean check(String command) throws CommandsPoolException {
+		File script = new File("src/remotecontrolserverfx/scripts/executable.vbs");
 		if (command != null) {
 			if(MUTE_PATTERN.matcher(command).matches()){
 				execute(() -> {
@@ -56,7 +57,7 @@ public abstract class Validation {
 			} else if(OPEN_PATTERN.matcher(command).matches()){
 				execute(() -> {
 					if(command.matches("open browser")){
-							//						Desktop environment = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+//						Desktop environment = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 //						if (environment != null && environment.isSupported(Desktop.Action.BROWSE)) {
 //							try {
 //									environment.browse(URI.create("http://www.google.com"));
@@ -64,23 +65,28 @@ public abstract class Validation {
 //									e.printStackTrace();
 //							}
 //						}
-						File script = new File("src/remotecontrolserverfx/scripts/executable.vbs");
 						if(script.exists()){
 							try {
-								Runtime.getRuntime().exec("wscript " + script.getAbsolutePath() + " \"cmd.exe \"start http://www.google.com\"\"");
+								Runtime.getRuntime().exec(new String[]{"wscript", 
+									script.getAbsolutePath(), 
+									"cmd.exe /c start http://"
+								});
 							} catch (IOException ex) {
 								Logger.getLogger(Validation.class.getName()).log(Level.SEVERE, null, ex);
 							}
 						}
 					} else if(command.matches("open browser with (.+)")){
-						System.out.println("with");
-						Matcher openBrowserMatcher = Pattern.compile("open browser with (.+)").matcher(command); openBrowserMatcher.find();
-						try {
-							Runtime.getRuntime().exec("cmd /c start /MIN cmd.exe /k \"start http://"
-								+ openBrowserMatcher.group(1)
-								+ "\"");
-						} catch (IOException ex) {
-							Logger.getLogger(Validation.class.getName()).log(Level.SEVERE, null, ex);
+						Matcher openWithMatcher = Pattern.compile("open browser with (.+)").matcher(command); openWithMatcher.find();
+						if(script.exists()){
+							try {
+								Runtime.getRuntime().exec(new String[]{
+									"wscript", 
+									script.getAbsolutePath(), 
+									"cmd.exe /c start http://" + openWithMatcher.group(1)
+								});
+							} catch (IOException ex) {
+								Logger.getLogger(Validation.class.getName()).log(Level.SEVERE, null, ex);
+							}
 						}
 					} else {	
 						Matcher openMatcher = OPEN_PATTERN.matcher(command); openMatcher.find();
@@ -92,9 +98,9 @@ public abstract class Validation {
 					}
 				});
 			} else if(CLOSE_PATTERN.matcher(command).matches()){
-				Matcher openMatcher = CLOSE_PATTERN.matcher(command); openMatcher.find();
+				Matcher closeMatcher = CLOSE_PATTERN.matcher(command); closeMatcher.find();
 				try {
-					Runtime.getRuntime().exec("taskkill /F /IM " + openMatcher.group(1));
+					Runtime.getRuntime().exec("taskkill /F /IM \"" + closeMatcher.group(1) + "\"");
 				} catch (IOException ex) {
 					Logger.getLogger(Validation.class.getName()).log(Level.SEVERE, null, ex);
 				}
