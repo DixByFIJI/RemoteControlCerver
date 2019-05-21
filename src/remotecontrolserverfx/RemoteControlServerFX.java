@@ -5,6 +5,7 @@
  */
 package remotecontrolserverfx;
 
+import remotecontrolserverfx.connections.Server;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,14 +15,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import remotecontrolserverfx.connections.ServerStopingListener;
 
 /**
  *
  * @author Username
  */
 public class RemoteControlServerFX extends Application {
-	protected final int SCENE_HEIGHT = 550;
-	protected final int SCENE_WIDTH = 750;
+	protected final int SCENE_HEIGHT = 500;
+	protected final int SCENE_WIDTH = 650;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -36,7 +38,20 @@ public class RemoteControlServerFX extends Application {
 
 	@Override
 	public void stop() {
-		Server.stop();
+		Server server = MainController.getServer();
+		if(server.isServerStarted()) {
+			server.stop(new ServerStopingListener() {
+				@Override
+				public void onBeginning() {
+					System.out.println("Begin");
+				}
+
+				@Override
+				public void onStopped() {
+					System.out.println("Stop");
+				}
+			});
+		}
 	}
 
 	/**

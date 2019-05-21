@@ -1,3 +1,7 @@
+.root {
+    -fx-background-color: white;
+}
+
 #hboxHeader {
     -fx-background-color: #ffffff;
     -fx-background-radius: 0 0 15 15;
@@ -9,16 +13,8 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); /*#0074D9; Border color*/
 }
 
-#vboxRecognition, #vboxSettings {
-/*    -fx-border-color: #7b7b7d;*/
-    -fx-background-color: #ebebeb;
-/*    -fx-border-width: 2;
-    -fx-border-radius: 15;*/
-    -fx-background-radius: 15;
-/*    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);*/
-}
-
-.table-view:row-selection:constrained-resize {
+#vboxRecognition {
+    -fx-background-color: #f3f4f6;
     -fx-background-radius: 15;
 }
 
@@ -51,23 +47,7 @@
     -fx-background-color: #f3f4f6;
 }
 
-#imgAdd {
-    -fx-background-radius: 15;
-    -fx-border-width: 10;
-}
-
-.table-view {
-    -fx-background-color: transparent;
-}
-
-.table-row-cell {
-    -fx-focus-traversable: false;
-}
-
-.table-view .column-header-background .nested-column-header {
-    -fx-background-radius: 15;
-    -fx-border-radius: 15;
-}
+/*Navigation bar*/
 
 #vboxNavigator {
     -fx-background-color: #001f3f;
@@ -75,8 +55,94 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
 }
 
-.btnFileChoose {
-    -fx-focus-traversable: false;
+#imgRecognition, #imgPrograms, #imgSettings {
+    -fx-cursor: hand;
+}
+
+#hboxSavePreset {
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 15;
+}
+
+/*SETTINGS*/
+
+#vboxSettings {
+    -fx-background-color: #f3f4f6;
+    -fx-background-radius: 15;
+}
+
+#paneConfigAdjust {
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 15;
+}
+
+#paneConfigAdjust .choice-box {
+    -fx-background-color: #dddddd;
+}
+
+#paneConfigAdjust .button {
+    -fx-background-color: #001E3C;
+    -fx-background-radius: 5;
+}
+
+/*TABLE*/
+
+#vboxTable {
+    -fx-background-color: #f3f4f6;
+    -fx-background-radius: 15;
+}
+
+#hboxTableActions {
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 0 0 15 15;
+}
+
+#vboxTableContent {
+    -fx-background-radius: 15 0 0 15;
+    -fx-background-color: #f3f4f6;
+}
+
+#imgAdd, #imgRemove, #imgSave {
+    -fx-cursor: hand;
+    -fx-background-color: #ffffff;
+}
+
+.imgChooseFile {
+    -fx-cursor: hand;
+}
+
+.row {
+    -fx-background-color: #ebebeb;
+}
+
+.selectedRow {
+    -fx-background-color: #9e9e9e;
+}
+
+.cell {
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 0;
+    -fx-font-size: 14;
+}
+
+#hboxSaveConfig .button, #hboxSaveConfig .text-field {
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 5;
+}
+
+#hboxSaveConfig {
+    -fx-background-color: #f3f4f6;
+    -fx-background-radius: 10;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-radius: 15;
+}
+
+.scroll-pane .viewport{
+    -fx-background-color: transparent;
+    -fx-background-radius: 15;
 }
 
 .scroll-bar:horizontal .track,

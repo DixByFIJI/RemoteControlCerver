@@ -5,18 +5,20 @@
             <url>src/remotecontrolserverfx/FXMLDocumentController.java</url>
             <bookmark id="1">
                 <name/>
-                <line>123</line>
+                <line>121</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/styles/style.css</file>
-            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/Server.java</file>
-            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/FXMLDocumentController.java</file>
-            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/UserProgram.java</file>
+            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/connections/Server.java</file>
+            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/Operator.java</file>
+            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/connections/SQLiteConnector.java</file>
+            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/MainController.java</file>
             <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/RemoteControlServerFX.java</file>
+            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/requests/Requestable.java</file>
+            <file>file:/C:/GitHub/RemoteControlServerFX/src/remotecontrolserverfx/connections/ExecutingTask.java</file>
         </group>
     </open-files>
 </project-private>
