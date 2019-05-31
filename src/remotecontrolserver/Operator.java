@@ -29,6 +29,11 @@ import remotecontrolserver.connections.ExecutingTask;
  */
 public abstract class Operator {
 	
+	/**
+	 * Creates table in database by specified name
+	 * @param table name of table which will be created
+	 */
+	
 	public static void createTable(String table){
 		String query = "CREATE TABLE " + table + " (name VARCHAR(50) NOT NULL PRIMARY KEY, path VARCHAR(100) NOT NULL);";
 		ExecutingTask<Void> task = new ExecutingTask<Void>() {
@@ -41,6 +46,11 @@ public abstract class Operator {
 		task.execute(query);
 	}
 	
+	/**
+	 * Removes table from database by specified name
+	 * @param table name of table which will be removed
+	 */
+	
 	public static void deleteTable(String table){
 		String query = "DROP TABLE " + table;
 		ExecutingTask<Void> task = new ExecutingTask<Void>() {
@@ -52,6 +62,11 @@ public abstract class Operator {
 		
 		task.execute(query);
 	}
+	
+	/**
+	 * Gets list of tables from database
+	 * @return list of existing tables from database
+	 */
 	
 	public static List<String> getTables(){
 		final String query = "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY rootpage DESC;";
@@ -76,6 +91,12 @@ public abstract class Operator {
 		return task.execute(query);
 	}
 	
+	/**
+	 * Gets column names form specified table
+	 * @param table name of table from which columns data be received
+	 * @return list of column names of table
+	 */
+	
 	public static List<String> getColumnNames(String table){
 		String query = "SELECT * FROM " + table;
 		ExecutingTask<List<String>> task = new ExecutingTask<List<String>>() {
@@ -98,6 +119,12 @@ public abstract class Operator {
 		return task.execute(query);
 	}
 	
+	/**
+	 * Gets count of columns form specified table
+	 * @param table name of table from which data will be received
+	 * @return count of columns
+	 */
+	
 	public static int getColumnCount(String table){
 		String query = "SELECT * FROM " + table;
 		ExecutingTask<Integer> task = new ExecutingTask<Integer>() {
@@ -117,12 +144,13 @@ public abstract class Operator {
 		return task.execute(query);
 	}
 	
+	/**
+	 * Inserts data to specified table of database
+	 * @param table name of table to which data will be added
+	 * @param data list of rows for adding to specified table
+	 */
+	
 	public static void insert(String table, List<ArrayList<String>> data){
-//		String query = "INSERT INTO " + table + "(`"
-//			+ String.join("`, `", getColumnNames(table))
-//			+ "`) VALUES("
-//			+ String.join(", ", getColumnNames(table).stream().map(x -> "?").toArray(String[]::new)) + ");";
-		
 		String query = "INSERT INTO " + table + "(`"
 			+ String.join("`, `", getColumnNames(table))
 			+ "`) VALUES"
@@ -145,7 +173,13 @@ public abstract class Operator {
 		task.execute(query, flattenData);
 	}
 	
-		public static List<ArrayList<String>> selectAll(String table){
+	/**
+	 * Selects records from specified table
+	 * @param table name of table from which records will be received
+	 * @return list of records from specified table
+	 */
+	
+	public static List<ArrayList<String>> selectAll(String table){
 		String query = "SELECT * FROM " + table + ";";
 		final List<String> columnNames = getColumnNames(table);
 		ExecutingTask<List<ArrayList<String>>> task = new ExecutingTask<List<ArrayList<String>>>() {
@@ -171,6 +205,11 @@ public abstract class Operator {
 		
 		return task.execute(query);
 	}
+	
+	/**
+	 * Removes records from specified table
+	 * @param table name of table from which records will de removed
+	 */
 	
 	public static void deleteAll(String table){
 		String query = "DELETE FROM " + table + ";";

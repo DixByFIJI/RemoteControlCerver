@@ -45,6 +45,11 @@ public class NetworkServiceManager {
 	private ServiceInfo mServiceInfo;
 	private ServiceListener mServiceListener;
 	
+	/**
+	 * Registers service of current device
+	 * @return {@code true} if the service was registered successfully
+	 */
+	
 	public boolean registerService() {
 		try {
 			InetAddress currentInetAddress = Server.getCurrentInetAddress();
@@ -65,6 +70,10 @@ public class NetworkServiceManager {
 		return true;
 	}
 	
+	/**
+	 * Removes available services
+	 */
+	
 	public void unregisterServices() {
 		if (jmDNS != null) {
 			if (mServiceListener != null) {
@@ -80,6 +89,11 @@ public class NetworkServiceManager {
 		}
 	}
 
+	/**
+	 * Gets instance of current service
+	 * @return instance of current service
+	 */
+	
 	public ServiceInfo getCurrentService() {
 		return mServiceInfo;
 	}

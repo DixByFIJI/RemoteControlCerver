@@ -46,10 +46,10 @@ public abstract class Validator {
 	private static final Pattern MUTE_PATTERN = Pattern.compile("mute", Pattern.CASE_INSENSITIVE);
 	private static final Pattern UNMUTE_PATTERN = Pattern.compile("unmute", Pattern.CASE_INSENSITIVE);
 	
-	private static final Pattern SHUTDOWN_PATTERN = Pattern.compile("shutdown( after (.+) (seconds?|minutes?|hours?))?", Pattern.CASE_INSENSITIVE);
+	private static final Pattern SHUTDOWN_PATTERN = Pattern.compile("shut ?down( after (.+) (seconds?|minutes?|hours?))?", Pattern.CASE_INSENSITIVE);
 	private static final Pattern RESTART_PATTERN = Pattern.compile("restart( after (.+) (seconds?|minutes?|hours?))?", Pattern.CASE_INSENSITIVE);
 	private static final Pattern LOGOUT_PATTERN = Pattern.compile("log ?out", Pattern.CASE_INSENSITIVE);
-	private static final Pattern ABORT_SHUTDOWN_PATTERN = Pattern.compile("abort", Pattern.CASE_INSENSITIVE);
+	private static final Pattern CANCEL_SHUTDOWN_PATTERN = Pattern.compile("cancel", Pattern.CASE_INSENSITIVE);
 	
 	private static final Pattern OPEN_PATTERN = Pattern.compile("open (.+)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern OPEN_WITH_PATTERN = Pattern.compile("open (.+) with (.+)", Pattern.CASE_INSENSITIVE);
@@ -61,6 +61,12 @@ public abstract class Validator {
 	
 	private static final Pattern MESSAGE_PATTERN = Pattern.compile("(.+) send", Pattern.CASE_INSENSITIVE);
 	private static final Pattern NOTE_PATTERN = Pattern.compile("(.+) as (.+)", Pattern.CASE_INSENSITIVE);
+	
+	/**
+	 * Checks incoming data from the network node
+	 * @param node instance which represents a network unit 
+	 * @return appropriate callback
+	 */
 	
 	public static String check(NetworkNode node) throws CommandsPoolException {
 		String callback = "An error occurred";
@@ -120,6 +126,7 @@ public abstract class Validator {
 				});
 			} else if(NOTE_PATTERN.matcher(command).matches()) {
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					Matcher noteMatcher = NOTE_PATTERN.matcher(command); noteMatcher.find();
 					String text = noteMatcher.group(1);
 					String name = noteMatcher.group(2);
@@ -149,53 +156,50 @@ public abstract class Validator {
 				});
 			} else if(MUTE_PATTERN.matcher(command).matches()){
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					try {
 						Runtime.getRuntime().exec(utilityFile.getAbsolutePath() + " mutesysvolume 1");
-//					File script = new File("src/remotecontrolserver/scripts/executable.vbs");
-//					if(script.exists()){
-//						Runtime.getRuntime().exec("wscript " + script.getAbsolutePath() + " \"nircmd.exe mutesysvolume 1\"");
-//					}
 					} catch (IOException ex) {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Volume muted";
 				});
 			} else if(UNMUTE_PATTERN.matcher(command).matches()){
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					try {
 						Runtime.getRuntime().exec(utilityFile.getAbsolutePath() + " mutesysvolume 0");
 					} catch (IOException ex) {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Volume error"; 
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Volume unmuted...";
 				});
 			} else if(HIDE_WINDOWS__PATTERN.matcher(command).matches()) {
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					try {
 						Runtime.getRuntime().exec(utilityFile.getAbsolutePath() + " sendkeypress lwin+m");
 					} catch (IOException ex) {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Hiding error"; 
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Hided...";
 				});
 			} else if(RESUME_WINDOWS__PATTERN.matcher(command).matches()) {
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					try {
 						Runtime.getRuntime().exec(utilityFile.getAbsolutePath() + " sendkeypress lwin+shift+m");
 					} catch (IOException ex) {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Resuming error"; 
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Resumed...";
 				});
 			} else if(CLOSE_WINDOW__PATTERN.matcher(command).matches()) {
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					try {
 						Runtime.getRuntime().exec(utilityFile.getAbsolutePath() + " sendkeypress lwin+shift+m");
 						Runtime.getRuntime().exec(utilityFile.getAbsolutePath() + " sendkeypress alt+f4");
@@ -203,28 +207,30 @@ public abstract class Validator {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Resuming error"; 
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Resumed...";
 				});
 			}else if(OPEN_WITH_PATTERN.matcher(command).matches()){
-				Matcher openWithMatcher = OPEN_WITH_PATTERN.matcher(command); openWithMatcher.find();
-				String key = openWithMatcher.group(1);
-				String parameter = openWithMatcher.group(2);
-				String value = MainController.pathsMap.get(key);
-				if(value != null) {
-					try {
-						Runtime.getRuntime().exec(value + " " + parameter);
-					} catch (IOException ex) {
-						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
+				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
+					Matcher openWithMatcher = OPEN_WITH_PATTERN.matcher(command); openWithMatcher.find();
+					String key = openWithMatcher.group(1);
+					String parameter = openWithMatcher.group(2);
+					String value = MainController.pathsMap.get(key);
+					if(value != null) {
+						try {
+							Runtime.getRuntime().exec(value + " " + parameter);
+						} catch (IOException ex) {
+							Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
+						}
+						return key + " opened";
+					} else {
+						return "Unknown program";
 					}
-					//showPopupCommandIntent(device.getName(), command);
-					return key + " opened";
-				} else {
-					return "Unknown program";
-				}
+				});
 			} else if(OPEN_PATTERN.matcher(command).matches()){
 				System.out.println("open pattern");
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					Matcher openMatcher = OPEN_PATTERN.matcher(command); openMatcher.find();
 					String key = openMatcher.group(1);
 					String value = MainController.pathsMap.get(key);
@@ -242,7 +248,6 @@ public abstract class Validator {
 						} catch (IOException ex) {
 							Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						}
-						//showPopupCommandIntent(device.getName(), command);
 						return key + " opened";
 					} else {
 						return "Unknown program";
@@ -250,6 +255,7 @@ public abstract class Validator {
 				});
 			} else if(CLOSE_PATTERN.matcher(command).matches()){
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					Matcher closeMatcher = CLOSE_PATTERN.matcher(command); closeMatcher.find();
 					String key = closeMatcher.group(1);
 					String value = MainController.pathsMap.get(key);
@@ -265,15 +271,15 @@ public abstract class Validator {
 					} else {
 						return "Unknown program";
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return key + " closed";
 				});
 			} else if(SHUTDOWN_PATTERN.matcher(command).matches()){
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					Matcher shutdownMatcher = SHUTDOWN_PATTERN.matcher(command); shutdownMatcher.find();
 					String query;
 					if(shutdownMatcher.group(1) != null) {
-						long timeout = wordsToNumber(shutdownMatcher.group(2));
+						long timeout = Long.parseLong(shutdownMatcher.group(2));
 						String unit = shutdownMatcher.group(3);
 						
 						if(timeout != -1) {
@@ -293,15 +299,15 @@ public abstract class Validator {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Shutdown error";
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Switched off";
 				});
 			} else if(RESTART_PATTERN.matcher(command).matches()){
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					Matcher restartMatcher = RESTART_PATTERN.matcher(command); restartMatcher.find();
 					String query;
 					if(restartMatcher.group(1) != null) {
-						long timeout = wordsToNumber(restartMatcher.group(2));
+						long timeout = Long.parseLong(restartMatcher.group(2));
 						String unit = restartMatcher.group(3);
 						
 						if(timeout != -1) {
@@ -321,30 +327,31 @@ public abstract class Validator {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Restarting error";
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Restarted";
 				});
 			} else if(LOGOUT_PATTERN.matcher(command).matches()){
 				String query = "shutdown /l";
 				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
 					try {
 						Runtime.getRuntime().exec(query);
 					} catch (IOException ex) {
 						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
 						return "Logoff error";
 					}
-					//showPopupCommandIntent(device.getName(), command);
 					return "Locked";
 				});
-			} else if(ABORT_SHUTDOWN_PATTERN.matcher(command).matches()) {
-				try {
-					Runtime.getRuntime().exec("shutdown /a");
-				} catch (IOException ex) {
-					Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
-					return "Aborting error";
-				}
-				//showPopupCommandIntent(device.getName(), command);
-				return "Aborted...";
+			} else if(CANCEL_SHUTDOWN_PATTERN.matcher(command).matches()) {
+				callback = execute(() -> {
+					showPopupCommandIntent("Command", device.getName(), command);
+					try {
+						Runtime.getRuntime().exec("shutdown /a");
+					} catch (IOException ex) {
+						Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
+						return "Aborting error";
+					}
+					return "Aborted...";
+				});
 			} else {
 				callback = "Unknown command";
 			}
@@ -354,9 +361,22 @@ public abstract class Validator {
 		return callback;
 	}
 	
+	/**
+	 * Executes system request
+	 * @param instance implemented instance of interface
+	 * @return appropriate callback
+	 */
+	
 	private static String execute(Executable instance){
 		return instance.call();
 	}
+	
+	/**
+	 * Shows pop-up message on desktop
+	 * @param title title of message
+	 * @param source sender information
+	 * @param message information for showing
+	 */
 	
 	private static void showPopupCommandIntent(String title, String source, String message){
 		Platform.runLater(new Runnable() {
@@ -365,95 +385,5 @@ public abstract class Validator {
 				Toast.makeText(title, source, message, 5000, 500, 500);
 			}
 		});
-	}
-	
-	private static long wordsToNumber(String input){
-    long result = 0;
-    long finalResult = 0;
-    List<String> allowedStrings = Arrays.asList(
-			"zero","one","two","three","four","five","six","seven",
-			"eight","nine","ten","eleven","twelve","thirteen","fourteen",
-			"fifteen","sixteen","seventeen","eighteen","nineteen","twenty",
-			"thirty","forty","fifty","sixty","seventy","eighty","ninety",
-			"hundred","thousand","million","billion","trillion"
-    );
-
-    if(input != null && input.length() > 0) {
-			input = input.replaceAll("-", " ");
-			input = input.toLowerCase().replaceAll(" and", " ");
-			String[] splittedParts = input.trim().split("\\s+");
-
-			for(String str : splittedParts) {
-				if(!allowedStrings.contains(str)) {
-					System.out.println("Invalid word found: " + str);
-					return -1;
-				}
-			}
-
-			for(String str : splittedParts) {
-				switch(str.toLowerCase()) {
-					case "zero" : result += 0; break;
-					case "one" : result += 1; break;
-					case "two" : result += 2; break;
-					case "three" : result += 3; break;
-					case "four" : result += 4; break;
-					case "five" : result += 5; break;
-					case "six" : result += 6; break;
-					case "seven" : result += 7; break;
-					case "eight" : result += 8; break;
-					case "nine" : result += 9; break;
-					case "ten" : result += 10; break;
-					case "eleven" : result += 11; break;
-					case "twelve" : result += 12; break;
-					case "thirteen" : result += 13; break;
-					case "fourteen" : result += 14; break;
-					case "fifteen" : result += 15; break;
-					case "sixteen" : result += 16; break;
-					case "seventeen" : result += 17; break;
-					case "eighteen" : result += 18; break;
-					case "nineteen" : result += 19; break;
-					case "twenty" : result += 20; break;
-					case "thirty" : result += 30; break;
-					case "forty" : result += 40; break;
-					case "fifty" : result += 50; break;
-					case "sixty" : result += 60; break;
-					case "seventy" : result += 70; break;
-					case "eighty" : result += 80; break;
-					case "ninety" : result += 90; break;
-					case "hundred" : result *= 100; break;
-					case "thousand" : {
-						result *= 1000;
-						finalResult += result;
-						result = 0;
-						break;
-					}
-					case "million" : {
-						result *= 1000000;
-						finalResult += result;
-						result = 0;
-						break;
-					}
-					case "billion" : {
-						result *= 1000000000;
-						finalResult += result;
-						result=0;
-						break;
-					}
-					case "trillion" : {
-						result *= 1000000000000L;
-						finalResult += result;
-						result = 0;
-						break;
-					}
-				}
-			}
-
-			finalResult += result;
-			result = 0;
-			return finalResult;
-		} else {
-			System.out.println("Incorrect input: " + input);
-			return -1;
-		}
 	}
 }

@@ -34,7 +34,9 @@ public class RemoteControlServer extends Application {
 		scene.getStylesheets().add(getClass().getResource("styles/style.css").toExternalForm());
 		stage.setScene(scene);
 		stage.setTitle("RemoteControl");
-		stage.getIcons().add(new Image(getClass().getResourceAsStream("sources/icon.png")));
+		Image icon = new Image(getClass().getResourceAsStream("sources/icon.png"));
+		Image smallIcon = new Image(getClass().getResourceAsStream("sources/icon_small.png"));
+		stage.getIcons().addAll(smallIcon, icon);
 		stage.setResizable(false);
 		stage.show();
 	}
@@ -46,12 +48,12 @@ public class RemoteControlServer extends Application {
 			server.stop(new ServerCompletingListener() {
 				@Override
 				public void onBeginning() {
-					System.out.println("Begin");
+					
 				}
 
 				@Override
 				public void onStopped() {
-					System.out.println("Stop");
+					
 				}
 			});
 		}

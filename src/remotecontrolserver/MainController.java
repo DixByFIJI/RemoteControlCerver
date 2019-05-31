@@ -97,11 +97,11 @@ public class MainController {
 	@FXML // fx:id="vboxNavigator"
 	private VBox vboxNavigator; // Value injected by FXMLLoader
 
-	@FXML // fx:id="imgRecognition"
-	private ImageView imgRecognition; // Value injected by FXMLLoader
+	@FXML // fx:id="imgServer"
+	private ImageView imgServer; // Value injected by FXMLLoader
 
-	@FXML // fx:id="imgPrograms"
-	private ImageView imgPrograms; // Value injected by FXMLLoader
+	@FXML // fx:id="imgConfigurations"
+	private ImageView imgConfigurations; // Value injected by FXMLLoader
 
 	@FXML // fx:id="imgSettings"
 	private ImageView imgSettings; // Value injected by FXMLLoader
@@ -171,13 +171,6 @@ public class MainController {
 		
 	@FXML // This method is called by the FXMLLoader when initialization is complete
 	void initialize() {
-//		Platform.runLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				Toast.makeText("Command", "Hello jhghhgjh gbsda sdasda sdasda sdaksdJKFSDKFcdfkasdukfuasdttfkasytdf hgjkhfgjhfg ggugug kjjksdhfjkhsjkfhjhsdjfkhjksdhfjkhsdjkfhjkshdfjhsjkdhfjkshjkfhksjhdfjshdjkfhs", 350000, 500, 500);
-//			}
-//		});
-
 		Image loader = new Image(getClass().getResourceAsStream("sources/loader.gif"));
 		imgLoader.setImage(loader);
 		
@@ -207,6 +200,15 @@ public class MainController {
 		
 		Tooltip saveTooltip = new Tooltip("Save changes");
 		Tooltip.install(imgSave, saveTooltip);
+		
+		Tooltip startingServerTooltip = new Tooltip("Server");
+		Tooltip.install(imgServer, startingServerTooltip);
+		
+		Tooltip configurationsTooltip = new Tooltip("Configurations");
+		Tooltip.install(imgConfigurations, configurationsTooltip);
+		
+		Tooltip settingsTooltip = new Tooltip("Settings");
+		Tooltip.install(imgSettings, settingsTooltip);
 		
 		SQLiteConnector connector = new SQLiteConnector();
 		
@@ -255,7 +257,7 @@ public class MainController {
 			});
 			System.out.println(pathsMap.values());
 
-			imgPrograms.setOnMouseClicked((MouseEvent event) -> {
+			imgConfigurations.setOnMouseClicked((MouseEvent event) -> {
 				vboxRecognition.setVisible(false);
 				vboxConfigurationTable.setVisible(true);
 				vboxSettings.setVisible(false);
@@ -266,7 +268,7 @@ public class MainController {
 				lblCurrentConfig.setText(choiceBoxConfig.getValue());
 			});
 
-			imgRecognition.setOnMouseClicked((MouseEvent event) -> {
+			imgServer.setOnMouseClicked((MouseEvent event) -> {
 				vboxRecognition.setVisible(true);
 				vboxConfigurationTable.setVisible(false);
 				vboxSettings.setVisible(false);
@@ -300,13 +302,20 @@ public class MainController {
 						items.clear();
 						items.addAll(Operator.getTables());
 						choiceBoxConfig.setValue(items.get(0));
+						lblCurrentConfig.setText(choiceBoxConfig.getValue());
 						uploadData(choiceBoxConfig.getValue());
 						loadData(choiceBoxConfig.getValue());
 					} else {
-						System.out.println("This config already exist");
+						Alert alert = new Alert(Alert.AlertType.WARNING);
+						alert.setHeaderText(null);
+						alert.setContentText("A configuration with that name already exists");
+						alert.showAndWait();
 					}
 				} else {
-					System.out.println("Empty field");
+					Alert alert = new Alert(Alert.AlertType.WARNING);
+						alert.setHeaderText(null);
+						alert.setContentText("Empty name of config");
+						alert.showAndWait();
 				}
 			});
 
@@ -324,9 +333,16 @@ public class MainController {
 			});
 
 			btnApply.setOnMouseClicked((MouseEvent event) -> {
-				loadData(choiceBoxConfig.getValue());
-				vboxSettings.setVisible(false);
+				vboxRecognition.setVisible(false);
 				vboxConfigurationTable.setVisible(true);
+				vboxSettings.setVisible(false);
+
+				txtConfigName.clear();
+				btnSaveConfig.setDisable(true);
+
+				loadData(choiceBoxConfig.getValue());
+				choiceBoxConfig.setValue(choiceBoxConfig.getItems().get(0));
+				lblCurrentConfig.setText(choiceBoxConfig.getValue());
 			});
 
 			lblHost.setOnMouseClicked((MouseEvent event) -> {
@@ -340,21 +356,18 @@ public class MainController {
 						server.start(new ServerStartingListener() {
 							@Override
 							public void onBeginning() {
-								System.out.println("Started...");
 								imgLoader.setVisible(true);
 								btnRun.setDisable(true);
 							}
 
 							@Override
 							public void onEstablished() {
-								System.out.println("Established...");
 								btnRun.getStyleClass().add(BUTTON_ACTIVATED_PSEUDO_CLASS);
 								imgLoader.setVisible(false);
 								btnRun.setDisable(false);
 								Platform.runLater(() -> {
 									btnRun.setGraphic(antennaAnimIcon);
 								});
-								System.out.println("Server started: " + server.isServerStarted());
 							}
 						});
 					} catch (ServerRunningException ex) {
@@ -385,6 +398,11 @@ public class MainController {
 		}
 	}
 	
+	/**
+	 * Uploads data to specified table of database
+	 * @param table name of the table to which data is will be added
+	 */
+	
 	private void uploadData(String table){
 		ObservableList<Node> rows = vboxTableContent.getChildren();
 		List<ArrayList<String>> data = new ArrayList<ArrayList<String>>(){{
@@ -409,6 +427,11 @@ public class MainController {
 		Operator.deleteAll(choiceBoxConfig.getValue());
 		Operator.insert(choiceBoxConfig.getValue(), data);
 	}
+	
+	/**
+	 * Loads data from specified table of database
+	 * @param table name of tale from which data will be downloaded
+	 */
 	
 	public void loadData(String table){
 		pathsMap.clear();
@@ -458,6 +481,10 @@ public class MainController {
 		}
 	}
 	
+	/**
+	 * Adds empty row into configuration table
+	 */
+	
 	public void addEmptyRowToTable(){
 		HBox emptyRow = new HBox();
 		TextField nameCell = new TextField();
@@ -495,9 +522,18 @@ public class MainController {
 		chooseFile(emptyRow);
 	}
 	
+	/**
+	 * Removes selected row from configuration table
+	 */
+	
 	public void removeRowFromTable() {
 		vboxTableContent.getChildren().remove(selectedRow);
 	}
+	
+	/**
+	 * Adds string to clipboard
+	 * @param str string which will be added to clipboard
+	 */
 	
 	public void setClipboard(String str){
 		Clipboard buffer = Clipboard.getSystemClipboard();
@@ -505,6 +541,11 @@ public class MainController {
 		content.putString(str);
 		buffer.setContent(content);
 	}
+	
+	/**
+	 * Calls file explorer for choosing file
+	 * @param source node from which method was called
+	 */
 	
 	private void chooseFile(Node source){
 		FileChooser fileChooser = new FileChooser();
@@ -517,7 +558,16 @@ public class MainController {
 		}
 	}
 	
-	private EventHandler<MouseEvent> rowSelecting = new EventHandler<MouseEvent>(){
+	/**
+	 * Gets instance of server
+	 * @return instance of server
+	 */
+	
+	public static Server getServer(){
+		return server;
+	}
+	
+	private final EventHandler<MouseEvent> rowSelecting = new EventHandler<MouseEvent>(){
 		@Override
 		public void handle(MouseEvent event) {
 			if(selectedRow != null){
@@ -532,11 +582,6 @@ public class MainController {
 				selectedRow = (HBox)source;
 			}
 			selectedRow.getStyleClass().add("selectedRow");
-			System.out.println("row is selected");
 		}
 	};
-	
-	public static Server getServer(){
-		return server;
-	}
 }

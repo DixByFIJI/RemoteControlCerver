@@ -31,8 +31,6 @@
 
 #btnRun:hover {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
-/*    -fx-border-width: 3;
-    -fx-border-radius: 10;*/
 }
 
 #btnRun:pressed {
@@ -47,7 +45,7 @@
     -fx-background-color: #f3f4f6;
 }
 
-/*Navigation bar*/
+/*NAVIGATION*/
 
 #vboxNavigator {
     -fx-background-color: #001f3f;
@@ -57,11 +55,6 @@
 
 #imgRecognition, #imgPrograms, #imgSettings {
     -fx-cursor: hand;
-}
-
-#hboxSavePreset {
-    -fx-background-color: #ebebeb;
-    -fx-background-radius: 15;
 }
 
 /*SETTINGS*/
@@ -83,9 +76,14 @@
 #paneConfigAdjust .button {
     -fx-background-color: #001E3C;
     -fx-background-radius: 5;
+    -fx-cursor: hand;
 }
 
-/*TABLE*/
+#paneConfigAdjust .button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+/*CONFIGURATIONS*/
 
 #vboxTable {
     -fx-background-color: #f3f4f6;
@@ -138,9 +136,20 @@
     -fx-font-size: 14;
 }
 
-#hboxSaveConfig .button, #hboxSaveConfig .text-field {
+#hboxSaveConfig .button {
     -fx-background-color: #ebebeb;
     -fx-background-radius: 5;
+    -fx-cursor: hand;
+} 
+
+#hboxSaveConfig .button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+} 
+
+#hboxSaveConfig .text-field {
+    -fx-background-color: #ebebeb;
+    -fx-background-radius: 5;
+    -fx-focus-traversable: false;
 }
 
 #hboxSaveConfig {

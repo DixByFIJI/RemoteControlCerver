@@ -45,28 +45,46 @@ public class SQLiteConnector {
 				.getCodeSource()
 				.getLocation()
 				.getPath()
-		).getParentFile().getParent() + "\\" + CONFIG_PACKAGE;
+		).getParent() + "\\" + CONFIG_PACKAGE;
 		
 		databasePath = packagePath + "\\" + DATABASE_NAME;
 	}
+	
+	/**
+	 * Checks configuration file for availability
+	 * @return {@code true} if file is exists
+	 */
 	
 	public boolean isConfigFileExist(){
 		return new File(databasePath).exists();
 	}
 	
+	/**
+	 * Checks configuration package for availability
+	 * @return {@code true} if package is exists
+	 */
+	
 	public boolean isConfigPackageExist(){
 		return new File(packagePath).exists();
 	}
+	
+	/**
+	 * Creates configuration package
+	 * @return {@code true} if package was created
+	 */
 
 	public boolean createConfigPackage(){
 		File packageFile = new File(packagePath);
-		System.out.println("package creating");
 		return packageFile.mkdir();
 	}
 	
+	/**
+	 * Creates configuration file
+	 * @return {@code true} if file was created
+	 */
+	
 	public boolean createConfigFile() {
 		boolean isCreated = true;
-		System.out.println("Creating config database");
 		FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -77,7 +95,6 @@ public class SQLiteConnector {
 				try (Connection connection = sqliteDataSource.getConnection()){
 					return connection != null;
 				} catch (SQLException ex) {
-					log("Database file creating error");
 					Logger.getLogger(SQLiteConnector.class.getName()).log(Level.SEVERE, null, ex);
 					return false;
 				}
@@ -96,9 +113,8 @@ public class SQLiteConnector {
 	}
 	
 	/**
-	 * Make connection to remote MySQL database
-	 * @param path
-	 * @return @code true if connection is successful
+	 * Makes connection to SQLite database
+	 * @return {@code} true if connection is successful
 	 */
 	
 	public boolean connect() {
@@ -107,7 +123,6 @@ public class SQLiteConnector {
 			FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
 				@Override
 				public Boolean call() throws Exception {
-					System.out.println("NEW CONNECTION...");
 					String url = "jdbc:sqlite:" + databasePath;
 					SQLiteDataSource sqliteDataSource = new SQLiteDataSource();
 					sqliteDataSource.setUrl(url);
@@ -136,9 +151,5 @@ public class SQLiteConnector {
 	
 	public Connection getConnection(){
 		return connection;
-	}
-	
-	private void log(String message){
-		System.out.println(TAG + ": " + message);
 	}
 }

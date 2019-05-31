@@ -58,21 +58,23 @@ public class Server {
 		this.PORT = port;
 	}
 
-	public synchronized boolean start(ServerStartingListener listener) {
+	/**
+	 * Launches server for listening connections
+	 * @param listener implemented instance of listener
+	 */
+	
+	public synchronized void start(ServerStartingListener listener) {
 		FutureTask<Boolean> serverTask = new FutureTask<Boolean>(new Callable<Boolean>(){
 			@Override
 			public Boolean call() {
-				serviceManager = new NetworkServiceManager();
-				serviceManager.setPort(PORT);
-				listener.onBeginning();
-				if(serviceManager.registerService()) {
-					System.out.println("Starting...");
 					try {
-						server = new ServerSocket(serviceManager.getCurrentService().getPort());
-						System.out.println(serviceManager.getCurrentService().getPort());
-						isStarted = true;
+						server = new ServerSocket(PORT);
+						serviceManager = new NetworkServiceManager();
+						serviceManager.setPort(server.getLocalPort());
+						listener.onBeginning();
+						serviceManager.registerService();
 						listener.onEstablished();
-						ExecutorService flowsPool = Executors.newFixedThreadPool(COUNT_OF_CONNECTIONS);
+						isStarted = true;
 						Semaphore block = new Semaphore(COUNT_OF_CONNECTIONS);
 
 						while (true) {
@@ -82,25 +84,17 @@ public class Server {
 								try (
 									InputStream inputStream = accept.getInputStream();
 									OutputStream outputStream = accept.getOutputStream();
-									//ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 									BufferedReader readerStream = new BufferedReader(new InputStreamReader(inputStream, "cp1251"));
 									PrintWriter writerStream = new PrintWriter(outputStream, true);
 								){
-									System.out.println("New session...");
 									Gson gson = new Gson();
 									String jsonInstanceString;
 									while((jsonInstanceString = readerStream.readLine()) != null){
-										System.out.println(jsonInstanceString);
 										NetworkNode node = gson.fromJson(jsonInstanceString, NetworkNode.class);
-										String command = node.getData();
-										System.out.println(command);
 										writerStream.println(Validator.check(node));
-//										System.out.println(jsonInstanceString);
-//										writerStream.println(Validator.check(new NetworkNode(null, jsonInstanceString)));
 									}
 
 									accept.close();
-									System.out.println("Session closed...");
 								} catch (IOException ex) {
 									ex.printStackTrace();
 								} catch (NullPointerException ex){
@@ -117,10 +111,7 @@ public class Server {
 						return false;
 					} catch (InterruptedException ex) {
 						Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-					} 
-				} else {
-					return false;
-				}
+					}
 				return true;
 			}
 		});
@@ -128,22 +119,22 @@ public class Server {
 	  Thread process = new Thread(serverTask);
 		process.setName("ServerThread");
 		process.start();
-		
-//		try {
-//			isStarted = serverTask.get();
-//		} catch (InterruptedException ex) {
-//			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-//		} catch (ExecutionException ex) {
-//			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-		
-		return isStarted;
 	}
 
+	/**
+	 * Gets local port from server
+	 * @return number of local port
+	 */
+	
 	public int getLocalPort(){
 		return server.getLocalPort();
 	}
     
+	/**
+	 * Gets local IP-V4 address from current connection
+	 * @return instance host address
+	 */
+	
 	public static InetAddress getCurrentInetAddress() {
 		InetAddress hostAddress = null;
 		try {
@@ -154,6 +145,11 @@ public class Server {
 		return hostAddress;
 	}
 
+	/**
+	 * Interrupts server
+	 * @param listener implemented instance of listener
+	 */
+	
 	public synchronized void stop(ServerCompletingListener listener) {
 		Thread stopThread = new Thread(new Runnable() {
 			@Override
@@ -161,7 +157,6 @@ public class Server {
 				try {
 					listener.onBeginning();
 					serviceManager.unregisterServices();
-					System.out.println("Services unregistered");
 					server.close();
 					isStarted  = false;
 					listener.onStopped();
@@ -173,6 +168,11 @@ public class Server {
 		
 		stopThread.start();
 	}
+	
+	/**
+	 * Gets state of server
+	 * @return {@code true} if server is started
+	 */
 	
 	public boolean isServerStarted(){
 		return isStarted;

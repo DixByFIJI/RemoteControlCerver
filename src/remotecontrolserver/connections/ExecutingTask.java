@@ -17,6 +17,12 @@ import java.util.logging.Logger;
  * @author Username
  */
 public abstract class ExecutingTask <D> {
+	
+	/**
+	 * Executes specified query regarding connection
+	 * @param query query for executing
+	 * @return instance of generic type
+	 */
 	public D execute(String query){
 		D data = null;
 		ResultSet resultSet = null;
@@ -29,12 +35,18 @@ public abstract class ExecutingTask <D> {
 				resultSet = preparedStatement.getResultSet();
 				data = onPostExecuted(resultSet);
 			} catch (SQLException ex) {
-				System.out.println("Executing query error");
 				Logger.getLogger(ExecutingTask.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 		return data;
 	}
+	
+	/**
+	 * Executes specified query regarding connection
+	 * @param query query for executing
+	 * @param values data for executing
+	 * @return instance of generic type
+	 */
 	
 	public D execute(String query, String ... values){
 		D data = null;
@@ -56,6 +68,12 @@ public abstract class ExecutingTask <D> {
 		}
 		return data;
 	}
+	
+	/**
+	 * Performs actions after executing
+	 * @param resultSet instance of result of executing
+	 * @return instance of generic type
+	 */
 	
 	public abstract D onPostExecuted(ResultSet resultSet);
 }

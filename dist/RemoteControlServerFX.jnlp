@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="RemoteControlServerFX.jar" size="181708" download="eager" />
+    <jar href="RemoteControlServerFX.jar" size="177019" download="eager" />
     <jar href="lib\gson-2.8.2.jar" size="232932" download="eager" />
     <jar href="lib\jmdns.jar" size="429083" download="eager" />
     <jar href="lib\sqlite-jdbc-3.27.2.1.jar" size="6012107" download="eager" />
